@@ -1,20 +1,53 @@
+import json
+
 import ollama
 
 
-# Define the functions
-def get_current_weather(location):
-    # Simulate API call to get current weather
-    weather_data = {
-        "New York, NY": {"weather": "sunny", "temperature": 75},
-        "Los Angeles, CA": {"weather": "cloudy", "temperature": 65}
-    }
-    return weather_data.get(location, {"weather": "unknown", "temperature": "unknown"})
-
-
-def get_stock_price(ticker):
+def print_price(p):
     # Simulate API call to get stock price
-    stock_data = {
-        "AAPL": {"price": 150.0},
-        "GOOG": {"price": 2500.0}
+    print(p)
+
+
+funcs = {
+    "print_price": print_price
+}
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "print_price",
+            "description": "print price on the console log",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "CNY": {
+                        "type": "float",
+                        "description": "人民币"
+                    },
+                    "DOLLAR": {
+                        "type": "float",
+                        "description": "美元"
+                    }
+                },
+                "required": ["CNY", "DOLLAR"]
+            }
+        }
     }
-    return stock_data.get(ticker, {"price": "unknown"})
+]
+
+response = ollama.chat(model='llama3.1', messages=[
+    {
+        'role': 'user',
+        'content': '一部手机的平均价格',
+    },
+], tools=tools)
+
+tool_calls = response['message']['tool_calls']
+
+for tool_call in tool_calls:
+    print(tool_call)
+    if tool_call['function']:
+        params = tool_call['function']['arguments']
+        func_name = tool_call['function']['name']
+        funcs[func_name](params)

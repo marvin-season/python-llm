@@ -1,10 +1,18 @@
 import chromadb
 import ollama
 
+# 使用embdding模型向量化文档，并存在向量数据库中
+# 使用embdding模型向量化提示词
+# 使用向量数据库查询相似度最近的记录
+# 将查到的向量记录与提示词合并，调用大模型生成结果
+
 embedding_model = 'mxbai-embed-large'
 documents = [
-    "在一个寒冷的冬天，赶集完回家的农夫在路边发现了一条冻僵了的蛇。他很可怜蛇，就把它放在怀里。当他身上的热气把蛇温暖以后，蛇很快苏醒了，露出了残忍的本性，给了农夫致命的伤害——咬了农夫一口。农夫临死之前说：“我竟然救了一条可怜的毒蛇，就应该受到这种报应啊！",
+    "在一个寒冷的冬天，赶集完回家的农夫在路边发现了一条冻僵了的蛇。", "他很可怜蛇，就把它放在怀里。",
+    "当他身上的热气把蛇温暖以后，蛇很快苏醒了，露出了残忍的本性，给了农夫致命的伤害——咬了农夫一口。",
+    "农夫临死之前说：“我竟然救了一条可怜的毒蛇，就应该受到这种报应啊！",
 ]
+prompt = "农夫死前在想什么？"
 
 dbclient = chromadb.Client()
 collection = dbclient.create_collection(name="docs")
@@ -19,9 +27,6 @@ for i, d in enumerate(documents):
     )
     embedding = response["embedding"]
     collection.add(ids=[str(i)], embeddings=[embedding], documents=[d])
-
-# an example prompt
-prompt = "农夫死前在想什么？"
 
 # generate an embedding for the prompt and retrieve the most relevant doc
 response = ollama.embeddings(

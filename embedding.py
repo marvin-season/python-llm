@@ -11,7 +11,7 @@ documents = [
     "Llamas live to be about 20 years old, though some only live for 15 years and others live to be 30 years old",
 ]
 
-dbclient = chromadb.Client()
+dbclient = chromadb.PersistentClient(path='./db/chroma')
 collection = dbclient.create_collection(name="docs")
 
 ollama = ollama.Client(host="http://localhost:11434")
@@ -46,3 +46,4 @@ output = ollama.generate(
 )
 
 print(output['response'])
+print(data)

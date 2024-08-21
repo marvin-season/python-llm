@@ -1,7 +1,5 @@
-import json
 
 import ollama
-
 
 def print_price(p):
     # Simulate API call to get stock price
@@ -35,7 +33,6 @@ tools = [
         }
     }
 ]
-
 response = ollama.chat(model='llama3.1', messages=[
     {
         'role': 'user',

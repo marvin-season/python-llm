@@ -19,7 +19,7 @@ schema = {
 }
 
 payload = {
-    "model": "llama3.1",
+    "model": "llama3.1:8b",
     "messages": [
         {
             "role": "system",
